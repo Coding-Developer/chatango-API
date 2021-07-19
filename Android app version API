@@ -1,0 +1,218 @@
+
+import requests
+from bs4 import BeautifulSoup
+import socket
+from time import sleep
+
+
+login_url = "https://chatango.com/settokenapp"
+
+meetpeople_url = "https://chatango.com/search"
+
+
+
+def extract(usern,arg2,arg3):
+    global age
+    global gender
+    global location
+    
+
+    get=requests.get(f"http://{usern}.chatango.com/")
+
+    soup = BeautifulSoup(get.text)
+
+
+    soup.find('span', {'class': 'profile_text'})
+
+    try:
+        profile_label=soup.find_all('span', {'class': 'profile_text'})
+        #age = int(profile_label[1].contents[0]) #age
+        gender = str(profile_label[3].contents[0]).rstrip() #gender
+
+        location= str(profile_label[5].contents[0]).rstrip() #location
+    except IndexError:
+        pass
+    else:
+
+        try:
+            #assert age == arg
+            assert gender ==arg2
+            location.index(arg3)
+            return True
+
+        except (ValueError,AssertionError):
+            pass
+ 
+            
+
+def login_app(username,password):
+    global pp
+
+
+
+    data = {
+        'sid':username,
+        'pwd':password,
+        'encrypted':'false',
+        'gcm':'flvzkWkRO1U:APA91bEz1JGsvT39LwhnIs6scMg8SuDSKfamMM9GjVtZlGZfURvKEVlSXK_-rYc1Y-JeQPKDfb5k6P_nRFjOZshFCnGqxMrsBBDOTUZmTJuZ7t941-zg3gt3V3TqmPN2-bxjhl2Lnmus',
+        'version':'50',
+        'os':'8.0.0',
+        'serial':'42004a3e6acbb543',
+        'model':'SM-J337A'}
+
+
+
+
+
+    with requests.session as s:
+
+        post=s.post(login_url,data=data)
+        #print(post.text)
+
+        f=post.json()
+        d = f['data']
+        mytoken = d['token']
+
+        data2 = {
+                'token':mytoken,
+                'app':'1',
+                'ami':'13',
+                'ama':'99',
+                'imc':'0',
+                's':'B',
+                'o':'1',
+                'f':0,
+                't':20}
+        a=20
+        b=35
+        aim=0
+
+        pp = []
+def search_users():
+    global data2
+    global a
+    global b
+    global mylist
+    global aim
+    global pp
+
+    
+    a +=15
+    b+=15
+    
+
+    data2['f'] = a
+    data2['t'] = b
+
+    post = s.post(meetpeople_url,data=data2)
+
+
+    g = post.text[2:]
+
+    g=g.replace(':','')
+
+    g=g.replace(';',' ')
+
+    g=g.replace('1','')
+
+    mylist = g.split()
+
+    #print(mylist)
+
+    
+    pp += mylist
+    aim+=1
+    
+
+    if aim == 30:
+        print(pp)
+
+
+#for _ in range(30):
+#    search_users()
+
+
+"""
+for user in pp:
+    if extract(user,'F','CA'):
+        print(user)
+        
+"""
+
+def login(usern, passw):
+  '''login to chatango'''
+  s = requests.session()
+  data = {
+    'user_id': usern,
+    'password': passw,
+    'storecookie': 'on',
+    'checkerrors': 'yes'
+  }
+ # print(passw)
+
+  post = s.post('https://chatango.com/login', data=data)
+  return post.cookies['auth.chatango.com']
+
+
+
+
+
+
+#commands
+#byte code
+
+#b'msg:username:gg\r\n\x00'
+#b'msg:username:+message+\r\n\x00'
+
+#login to acc -----
+
+#b'tlogin:'+auth+b':'+b'2\x00'
+
+
+
+token = login('username','password')
+
+auth=token.encode()
+print(auth)
+
+
+
+s= socket.socket()
+s.connect(('208.93.230.141',843))
+s.send(b'tlogin:'+auth+b':'+b'2\x00')
+
+count=0
+def main(user,msg):
+
+    global count
+
+    _msg = msg
+
+    usern=user.encode()
+
+    msg=_msg.encode()
+
+    s.send(b'msg:'+usern+b':<n7/><m v="1">'+msg+b'</m>\r\n\x00')
+    count+=1
+    print(count)
+    
+
+    sleep(2)
+
+  
+
+
+
+
+
+
+
+#for user in pp:
+#    main(user)
+
+#login_to_server()
+
+main('username','Hey how are you')
+
+
+    
