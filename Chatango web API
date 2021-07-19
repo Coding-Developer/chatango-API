@@ -1,0 +1,126 @@
+	#Offical chatango api 2020
+#Copyright 2020, Coding-Developer, All rights reserved (Private source)
+# Author: Marquise Wayns
+# Due to bug problems on Chatango Meet People tab is only for bg users.
+
+import requests
+import socket
+from time import sleep
+import random
+import string
+
+
+def char_generator(size=6, chars=string.ascii_uppercase + string.digits):
+    '''Random char generator'''
+
+    return ''.join(random.choice(chars) for _ in range(size))
+
+
+def login(usern, passw):
+    '''login to chatango'''
+
+    s = requests.session()
+    data = {
+        'user_id': usern,
+        'password': passw,
+        'storecookie': 'on',
+        'checkerrors': 'yes'
+    }
+    # print(passw)
+
+    post = s.post('https://chatango.com/login', data=data)
+    try:
+        return post.cookies['auth.chatango.com']
+
+    except KeyError:
+        print('Incorrect login info')
+        exit()
+
+
+def editprofile(bio, age, gender):
+    '''Edit your account'''
+
+    email = char_generator(13)
+    xemail = str(email)
+    data = {
+        'dir': 'checked',
+        'checkerrors': 'yes',
+        'uns': '0',
+        'line': bio,
+        'email': xemail + '@gmail.com',
+        'location': '?',
+        'gender': gender,
+        'age': age
+    }
+
+    post = requests.post(f"http://{user}.chatango.com/updateprofile?flash&d&s={token}", data=data)
+
+
+def uploadphoto(path_to_file):
+    '''Upload a photo to your account'''
+
+    files = {
+        'Filedata': open(path_to_file, 'rb')
+    }
+    data = {
+        'Filename': 'random.png',
+        'Upload': 'Submit Query'}
+    post3 = requests.post(f"http://{user}.chatango.com/updateprofile?flash&flashfileref&s={token}", data=data,
+                          files=files)
+
+
+def send_message(user, msg):
+    '''Send a user a private message'''
+
+    _msg = msg
+
+    usern = user.encode()
+
+    msg = _msg.encode()
+
+    s.send(b'msg:' + usern + b':<n7/><m v="1">' + msg + b'</m>\r\n\x00')
+
+    print('Message Sent.')
+
+    sleep(2)
+
+
+def report_user(usern):
+    '''Report a user'''
+
+    user = usern.encode()
+
+    s.send(b'flaguser:' + user + b'::P')
+
+    print('Thank you for reporting this user.')
+
+
+def main(user, passw)
+
+    token = login(user, passw)
+
+    auth = token.encode()
+
+    s = socket.socket()
+    s.connect(('208.93.230.141', 843))
+    s.send(b'tlogin:' + auth + b':' + b'2\x00')
+
+    # Edit your profile
+
+    # editprofile(bio, age, gender)
+
+    # Upload a photo to your account
+
+    # uploadphoto(path_to_file)
+
+    # Send a user a message
+
+    # send_message('sixteen','Hello!')
+
+    # Report a user
+
+    # report_user(usern)
+
+
+if __name__ == '__main__':
+    main('testuser','testpassword')
