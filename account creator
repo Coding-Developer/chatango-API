@@ -1,0 +1,141 @@
+import requests
+import string
+import random
+
+signup_url ="https://chatango.com/signupdir"
+
+
+
+
+
+def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
+
+
+
+
+def usernames():
+
+    file1 = open(r'C:\Users\joijm\PycharmProjects\chatango\files\usernames.txt','r',encoding='utf-8')
+
+    Lines = file1.readlines()
+    for line in Lines:
+        yield line.strip()
+
+
+
+
+
+
+
+
+
+
+s = requests.session()
+
+
+
+def signup(usern,password):
+
+
+    email = id_generator(13)
+    xemail = str(email)
+
+    data ={
+        'email': xemail+'@gmail.com',
+        'login': usern,
+        'password': password,
+        'password_confirm':password,
+        'storecookie': 'on',
+        'signupsubmit': 'Signup',
+        'checkerrors': 'yes'
+    }
+
+
+
+    post=s.post(signup_url,data=data)
+
+    try:
+        if post.cookies['auth.chatango.com']:
+
+            return True
+    except Exception:pass
+
+
+
+
+
+
+
+def editprofile(age,gender,line):
+
+    email = id_generator(13)
+    xemail = str(email)
+    data2 = {
+        'dir': 'checked',
+        'checkerrors': 'yes',
+        'uns': '0',
+        'line': line,
+        'email': xemail+'@gmail.com',
+        'location': '?',
+        'gender': gender,
+        'age': age
+    }
+
+
+    post=s.post(f"http://{s.cookies['id.chatango.com']}.chatango.com/updateprofile?flash&d&s={s.cookies['auth.chatango.com']}",data=data2)
+    #print(post.text)
+
+
+
+
+
+#editprofile(s.cookies['id.chatango.com'],18,'M','hmu im bored')
+
+
+
+def uploadphoto():
+    
+    files = {
+        'Filedata':open('ggg.jfif','rb')
+    }
+    data3 = {
+        'Filename': 'random.png',
+        'Upload': 'Submit Query'}
+    post3=s.post(f"http://{s.cookies['id.chatango.com']}.chatango.com/updateprofile?flash&flashfileref&s={s.cookies['auth.chatango.com']}",data=data3,files=files)
+   #print(post3.url)
+    #s.cookies.clear()
+
+
+
+
+
+
+
+def make_accs():
+    global s
+
+   
+
+    for user in usernames():
+        wfile = open(r'C:\Users\joijm\PycharmProjects\chatango\files\accounts\ch_accs.txt', 'a')
+
+        password = id_generator(9)
+        num=random.randint(500,2397)
+
+        age = random.randint(13, 19)
+
+        xnum = str(num)
+        xuser = user+xnum
+
+
+        if signup(xuser,password):
+            editprofile(age,'m','Sup hmu im bored. XD')
+            print(xuser)
+            wfile.write(xuser + ': ' +password + '\n')
+            wfile.close()
+            s.cookies.clear()
+
+
+
+make_accs()
